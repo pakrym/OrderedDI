@@ -15,7 +15,6 @@ namespace Microsoft.Extensions.DependencyInjection.OrderProvider
             var orderContainer = collection.GetOrderContainer<T>();
 
             // TODO: Add check so two services could not be added with same implementation type
-            // or with type that is base type of registered implemenation
             orderContainer.Add(ServiceDescriptor.Transient(typeof(T), typeof(I)));
             collection.AddTransient<T, I>();
             return collection;
