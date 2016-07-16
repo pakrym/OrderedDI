@@ -1,0 +1,14 @@
+{
+  "version": "1.0.0-*",
+  "dependencies": {
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0-*"
+  },
+  "frameworks": {
+    "netstandard1.1": {
+      "dependencies": {
+        "System.Reflection": "4.1.0",
+        "System.Collections": "4.0.11-*"
+      }
+    }
+  }
+}
