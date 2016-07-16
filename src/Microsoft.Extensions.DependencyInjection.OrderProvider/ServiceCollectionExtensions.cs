@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Collections;
 
 namespace Microsoft.Extensions.DependencyInjection.OrderProvider
 {
@@ -36,7 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection.OrderProvider
             return collection;
         }
 
-        public static OrderContainer<T> GetOrderContainer<T>(this IServiceCollection collection) 
+        private static OrderContainer<T> GetOrderContainer<T>(this IServiceCollection collection) 
         {
             var containers = collection.Where(d => d.ServiceType == typeof(OrderContainer<T>));
             if (containers.Count() > 1)
@@ -64,71 +61,5 @@ namespace Microsoft.Extensions.DependencyInjection.OrderProvider
                 return (OrderContainer<T>)containerDescriptor.ImplementationInstance;
             }
         }
-    }
-
-    public interface IOrderProvider<T>
-    {
-        IEnumerable<T> Apply(IEnumerable<T> services);
-    }
-
-    public class Ordered<T> : IOrdered<T>, IDisposable
-    {
-        private static readonly List<IDisposable> _disposable = new List<IDisposable>();
-
-        private OrderContainer<T> _container;
-        private IEnumerable<T> _items;
-        private IServiceProvider _provider;
-        
-        public Ordered(IServiceProvider provider, OrderContainer<T> container, IEnumerable<T> items)
-        {
-            _provider = provider;
-            _container = container;
-            _items = items;
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            foreach (var item in _container)
-            {
-                T result = default(T);
-                if (item.ImplementationFactory != null)
-                {
-                    result = (T)item.ImplementationFactory(_provider);
-                }
-                else if (item.ImplementationInstance != null)
-                {
-                    result =  (T)item.ImplementationInstance;
-                }
-                else if (item.ImplementationType != null)
-                {
-                    // we can create instances manually bu better to give 
-                    // container ability to optimize
-                    result =  _items.SingleOrDefault(i => i.GetType() == item.ImplementationType);
-                }
-                if (result is IDisposable)
-                {
-                    _disposable.Add((IDisposable)result);
-                    yield return result;
-                }
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
-
-    public interface IOrdered<T>: IEnumerable<T>
-    {
-    }
-
-    public class OrderContainer <T>: List<ServiceDescriptor>
-    {
     }
 }
